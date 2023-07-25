@@ -33,6 +33,7 @@ function Home() {
   const [isClicked, setisClicked] = React.useState(false)
   const [isCredSelected, setisCredSelected] = React.useState(false)
   const [clickedButtons, setClickedButtons] = React.useState([])
+  const [text, setText] = useState("")
   const navigate = useNavigate();
 
   const [state, setState] = useState({
@@ -57,7 +58,7 @@ function Home() {
   };
 
   const zkpVaultContractConfig = {
-    address: "0xa2594512a75a09218e4d5a84365ad272a48d9699",
+    address: "0xb4Cd7f0D696a8A178dd560dCF01C8aa3F95a87d6",
     abi: zkpVaultABI.abi,
     chainId: 11155111,
   };
@@ -101,7 +102,9 @@ function Home() {
 
   React.useEffect(() => {
     if (sbtData) {
-      console.log("SBT-Data:", getCallData);
+      console.log("SBT-Data:", sbtData.data);
+      // setText(JSON.stringify(sbtData.data[0]))
+      
     }
   }, [sbtData]);
 
@@ -111,7 +114,7 @@ function Home() {
   const { data, write } = useContractWrite({
     ...zkpVaultContractConfig,
     functionName: "mint",
-    args: [getCallData.a, getCallData.b, getCallData.c, getCallData.Input],
+    args: [getCallData.a, getCallData.b, getCallData.c, getCallData.input],
   })
 
   React.useEffect(() => {
@@ -208,10 +211,12 @@ function Home() {
       Input.push(argv[i]);
     }
 
+    
     Input.push(1)
 
-
-    setCallData({ a, b, c, Input })
+    console.log("------")
+    setText(JSON.stringify({ a, b, c, input: ['1','1'] }))
+    setCallData({ a, b, c, input: ['1','1'] })
 
     console.log(proof);
     const vkey = await fetch("http://localhost:8000/aadharCheck.vkey.json").then(function (res) {
@@ -221,9 +226,12 @@ function Home() {
     setProof(proof)
 
     const res = await snarkjs.groth16.verify(vkey, ['1'], proof);
-    // console.log("Result:", res);
+    console.log("Result:", res);
 
   }
+
+
+  
 
   async function calculateProofForBob() {
 
@@ -258,7 +266,7 @@ function Home() {
     Input.push(1)
 
 
-    setCallData({ a, b, c, Input })
+    setCallData({ a, b, c, input: ['1','1'] })
 
     console.log(proof);
     const vkey = await fetch("http://localhost:8000/aadharCheck.vkey.json").then(function (res) {
@@ -473,6 +481,9 @@ function Home() {
           <Button onClick={handleLogout} variant='contained' color='secondary' sx={{ marginTop: '15px' }} >
             LogOut
           </Button>
+          <p style={{color:'white', fontSize:10}} color='secondary'> 
+            {text}
+          </p>
         </div>
 
       </div>

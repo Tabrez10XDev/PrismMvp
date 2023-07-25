@@ -1,17 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Particle from '../components/Particle'
-import { Card, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import Lottie from 'react-lottie'
 import animationdata from '../lottie/118002-warning.json'
 import { ConnectKitButton, useSIWE } from "connectkit"
 import {
   useAccount,
-  usePrepareContractWrite,
-  useWaitForTransaction,
-  useContractWrite,
   useContractRead,
 } from "wagmi";
+import zkpVaultABI from "../zkVault.json"
 
 import './Verification.css'
 
@@ -31,18 +29,33 @@ const Verification = () => {
 
   const { address, isConnected } = useAccount();
 
-  async function verify() {
-    const vkey = await fetch("http://localhost:8000/aadharCheck.vkey.json").then(function (res) {
-      return res.json();
+  const verifierContractAddress = "0x516155d6A72aC42dC923CFcCd084Fb858659aE48"
+
+  const [verified, setVerified] = useState(false)
+
+
+
+    const zkpVaultContractConfig = {
+      address: "0xb4Cd7f0D696a8A178dd560dCF01C8aa3F95a87d6",
+      abi: zkpVaultABI.abi,
+      chainId: 11155111,
+    };
+
+    const addressVerified = useContractRead({
+      ...zkpVaultContractConfig,
+      functionName: "validateAttribute",
+      watch: true,
+      args: [address, verifierContractAddress],
+      onError(err) {
+        setVerified(false);
+        console.log("error bro", err)
+      },
+      onSuccess(data) {
+        console.log("success bro")
+        setVerified(true);
+      },
     });
 
-
-    // const res = await snarkjs.groth16.verify(vkey, ['1'], getProof);
-    // console.log("Result:", res);
-  }
-  React.useEffect(() => {
-
-  }, [isConnected]);
 
   return (
     <>
@@ -63,10 +76,14 @@ const Verification = () => {
               <ConnectKitButton />
 
             </div>
-
-            <Typography variant='h2' align='center' sx={{ color: 'rebeccapurple' }}>
-              User is not verified
-            </Typography>
+            { verified ? 
+              <Typography variant='h2' align='center' sx={{ color: 'rebeccapurple' }}>
+                User is verified
+              </Typography> 
+              : <Typography variant='h2' align='center' sx={{ color: 'rebeccapurple' }}>
+                User is not verified
+              </Typography>
+              }
 
           </div>
         </div>

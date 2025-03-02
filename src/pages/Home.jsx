@@ -12,6 +12,9 @@ import { ConnectKitButton, useSIWE } from "connectkit"
 import zkpVaultABI from "../zkVault.json"
 import Lottie from 'react-lottie';
 import TextField from '@mui/material/TextField';
+import Draggable from './Draggable';
+import Spline from '@splinetool/react-spline';
+import starBg from "./assets/starBg.png"
 
 import animationData from '../lottie/99630-tick.json'
 import {
@@ -71,11 +74,11 @@ function Home() {
   });
 
 
-  React.useEffect(() => {
-    if (totalSupplyData) {
-      console.log("Total Supply:", totalSupplyData);
-    }
-  }, [totalSupplyData]);
+  // React.useEffect(() => {
+  //   if (totalSupplyData) {
+  //     console.log("Total Supply:", totalSupplyData);
+  //   }
+  // }, [totalSupplyData]);
 
 
   const hasSoul = useContractRead({
@@ -85,10 +88,10 @@ function Home() {
     args: [address],
   });
 
-  React.useEffect(() => {
-    console.log("hasSoul:", hasSoul);
+  // React.useEffect(() => {
+  //   console.log("hasSoul:", hasSoul);
 
-  }, [hasSoul]);
+  // }, [hasSoul]);
 
 
   const sbtData = useContractRead({
@@ -100,13 +103,13 @@ function Home() {
 
 
 
-  React.useEffect(() => {
-    if (sbtData) {
-      console.log("SBT-Data:", sbtData.data);
-      // setText(JSON.stringify(sbtData.data[0]))
+  // React.useEffect(() => {
+  //   if (sbtData) {
+  //     console.log("SBT-Data:", sbtData.data);
+  //     // setText(JSON.stringify(sbtData.data[0]))
       
-    }
-  }, [sbtData]);
+  //   }
+  // }, [sbtData]);
 
 
 /* global BigInt */
@@ -122,63 +125,22 @@ function Home() {
   }, [data]);
 
 
-  // async function calculateProof() {
-
-  //   navigate('/Verification')
-
-  //   const input = { age: 19, citizenship: 91, cibil: 120 }
-
-  //   const { proof, publicSignals } =
-  //     await snarkjs.groth16.fullProve(input, "http://localhost:8000/aadharCheck.wasm", "http://localhost:8000/aadharCheck.zkey");
-  //   console.log(proof);
-  //   console.log(publicSignals);
-
-  //   const callData = await snarkjs.groth16.exportSolidityCallData(
-  //     proof,
-  //     publicSignals
-  //   )
-  //   const argv = callData
-  //     .replace(/["[\]\s]/g, "")
-  //     .split(",")
-  //     .map((x) => BigInt(x).toString());
-  //   const a = [argv[0], argv[1]];
-  //   const b = [
-  //     [argv[2], argv[3]],
-  //     [argv[4], argv[5]],
-  //   ];
-  //   const c = [argv[6], argv[7]];
-  //   const Input = [];
-
-
-  //   for (let i = 8; i < argv.length; i++) {
-  //     Input.push(argv[i]);
-  //   }
-
-  //   Input.push(1)
-
-
-  //   setCallData({ a, b, c, Input })
-
-  //   console.log(proof);
-  //   const vkey = await fetch("http://localhost:8000/aadharCheck.vkey.json").then(function (res) {
-  //     return res.json();
-  //   });
-  //   const res = await snarkjs.groth16.verify(vkey, ['1'], proof);
-  //   console.log("Result:", res);
-
-  // }
 
   const [getProof, setProof] = useState()
 
   async function verify(){
-    console.log(getProof);
     const vkey = await fetch("http://localhost:8000/aadharCheck.vkey.json").then(function (res) {
       return res.json();
     });
 
 
-    const res = await snarkjs.groth16.verify(vkey, ['1'], getProof);
-    console.log("Result:", res);
+    try{
+      const res = await snarkjs.groth16.verify(vkey, ['1'], getProof);
+      console.log("Result:", res);
+    }catch{
+
+    }
+   
   }
 
   async function calculateProofForAlice() {
@@ -235,7 +197,7 @@ function Home() {
 
   async function calculateProofForBob() {
 
-    const input = { age: 32, citizenship: 66, cibil: 56 }
+    const input = { age: 36, citizenship: 91, cibil: 101 }
 
     const { proof, publicSignals } =
       await snarkjs.groth16.fullProve(input, "http://localhost:8000/aadharCheck.wasm", "http://localhost:8000/aadharCheck.zkey");
@@ -276,7 +238,7 @@ function Home() {
     setProof(proof)
 
     const res = await snarkjs.groth16.verify(vkey, ['1'], proof);
-    // console.log("Result:", res);
+    console.log("Result:", res);
 
   }
 
@@ -304,11 +266,72 @@ function Home() {
     }
   }
 
+  const tokens = [1,2,3,4,5,6,7,8,9,10,11]
   //var select = 'CHOOSE';
 
   return (
     <>
-      <div style={{ height: '100vh', backgroundColor: 'black' }}>
+    <div style={{height:'100vh', width:'100vw', overflow:'hidden', justifyContent:'center', position:'relative',
+        backgroundImage: `url(${starBg})`,
+        backgroundSize: 'cover',
+        alignItems:'center',
+        backgroundPosition: 'center'
+
+    }}>
+      <p
+  style={{
+    background: 'linear-gradient(90deg, white, #E9B9FF, #E9B9FF, #C962F9, #C962F9)',
+    WebkitBackgroundClip: 'text',
+    color: 'transparent',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize:80,
+    fontFamily:'Poppins',
+    zIndex:1000,
+    marginTop:'35vh'
+  }}
+>
+  WiSecure
+</p>
+<p
+  style={{
+    color: 'white',
+    fontFamily:'Poppins',
+    textAlign: 'center',
+    fontSize:20,
+    marginTop:-70,
+    zIndex:1000
+  }}
+>
+Verify with Privacy, Share with Confidence
+</p>
+      {
+                    tokens.map((ele, i) => {
+                        return (
+                            <Draggable i={i} />
+
+                        )
+                    })
+                }
+
+{/* <div style={{ position: 'absolute', top: 0, left: 0, width: '300px', height: '300px', transform: 'scale(0.5)' }}>
+<Spline scene="https://prod.spline.design/1jtAlw0NiDmVF4yv/scene.splinecode" />
+
+        </div> */}
+          
+<div style={{ position: 'absolute', top: 0, right: 0, width: '350px', height: '350px', transform: 'scale(0.4)' }}>
+<Spline style={{}}
+        scene="https://prod.spline.design/S0iyPn7QA1XS2z6O/scene.splinecode" 
+      />
+        </div>
+     
+      
+      </div>
+
+ 
+
+
+      <div style={{ height: '100vh', backgroundColor: 'black', position:'relative' }}>
         <Canvas>
           <OrbitControls />
           <Stars />
@@ -332,7 +355,7 @@ function Home() {
           
         </div>
 
-
+        
         {
          
 
@@ -445,7 +468,6 @@ function Home() {
          )}
 
         
-        
         <div id='overlay'>
 
           <Card id='card' sx={{ backgroundColor: '#121212', borderRadius: '2%', opacity: '85%' }}>
@@ -486,7 +508,13 @@ function Home() {
           </p>
         </div>
 
+
+  
+
       </div>
+
+      
+      
 
       {/* if (Object.keys(getCallData).length !== 0) {
       mint?.();

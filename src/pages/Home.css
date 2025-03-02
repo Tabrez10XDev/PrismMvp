@@ -18,6 +18,33 @@
   z-index: 100;
 }
 
+.full-circle {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+
+.blurred-circle {
+  position: absolute;
+  width: 5rem;  /* 20 * 0.25rem */
+  height: 5rem;
+  border-radius: 50%;
+  filter: blur(4px);
+  transition: filter 0.5s ease;
+  background-color: transparent; /* Tailwind bg-blue-500 */
+  z-index: 20;
+}
+
+.blurred-circle:hover,
+.blurred-circle.active { /* Equivalent to state && 'blur-0' */
+  filter: blur(0);
+}
+
+
 #card
 {
   margin-top: 50px;
